@@ -1,0 +1,13 @@
+EXE_INC = \
+    -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+    -I$(FOAM_RUN)/programmingTutorial06/codeV2406incompressibleEpsilon/myEpsilon \
+    -I$(FOAM_RUN)/programmingTutorial06/codeV2406/incompressible/myKOmega \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/transportModels
+
+LIB_LIBS = \
+    -lturbulenceModels \
+    -lfiniteVolume \
+    -lmeshTools \
+    -lincompressibleTransportModels
