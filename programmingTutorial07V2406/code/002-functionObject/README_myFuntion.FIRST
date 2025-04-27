@@ -9,7 +9,7 @@ Tut7.2 :new   function objects
     Copy forces folder 
         /home/huanix/OpenFOAM/OpenFOAM-v2406/src/functionObjects/forces 
     to personal poject root:
-        /home/huanix/OpenFOAM/huanix-v2406/run/programmingTutorial07V2406/code/002-functionObject/myFunctionObject
+        /home/huanix/OpenFOAM/huanix-v2406/run/programmingTutorial07V2406/code/002-functionObject/forces
     and rename forces as myFunctionObject
     then  rename all the string "forces" as "myFunctionObject" no matter for  folder name or contents in Make/files,Make/options
 
@@ -106,3 +106,55 @@ Copy
 Edit
 git push
 这样才能把本地的修改真正写进 Git 历史，并同步到 GitHub。
+
+7. 3 new fvOptions
+
+1. initial prepare for project structure:
+    copy laplacianFoam from
+     /home/huanix/OpenFOAM/OpenFOAM-v2406/applications/solvers/basic/laplacianFoam
+    to project root 
+    /home/huanix/OpenFOAM/huanix-v2406/run/programmingTutorial07V2406/code/003-fvOptions/laplacianFoam   
+    and rename laplacianFoam as myLaplacianDynamicSourceFoam 
+    then  rename  "laplacianFoam" as "myLaplacianDynamicSourceFoam" in Make/files,Make/option
+2.change the myLaplacianDynamicSourceFoam.C as:
+
+                fvm::ddt(T) - fvm::laplacian(DT, T)
+             ==
+                fvOptions(T)
+3. compile
+4. run testcase:003-fvOption
+
+about:
+                fvm::ddt(T) - fvm::laplacian(DT, T)
+             ==
+                fvOptions(T)
+this code to  tell OpenFOAM to do three things in each time step:
+
+Transient term: fvm::ddt(T) assembles the time‐derivative ∂T/∂t.
+
+Diffusion term: - fvm::laplacian(DT, T) adds the usual conductive/diffusive flux ∇·(DT∇T).
+
+Source term from fvOptions: fvOptions(T) reads all of the entries you’ve defined in your system/fvOptions dictionary
+ and injects them as right‐hand‐side source terms into the temperature equation.
+
+
+What actually happens under the hood?
+When your solver starts, it includes and constructs an fvOptions object, which parses the system/fvOptions file.
+
+Each entry in that file (e.g. a heat injection zone, a cooling sink, a porous‐media block, 
+or any custom source you’ve coded and registered) becomes an instance of an fvOption subclass.
+
+On every time step, before solving the equation, the solver calls options.updateCoeffs().
+That computes the current source strength for each cell (which can depend on time, temperature, position, etc.).
+
+When you write fvOptions(T), it returns the accumulated source‐term field, which is added into the linear system for T exactly like any other explicit source term.
+
+Why use fvOptions?
+No need to modify your solver’s C++ code each time you want to add or tweak a source term.
+
+You can turn sources on/off, change their magnitude, or confine them to specific cellZones or cellSets, simply by editing system/fvOptions.
+
+It supports a wide range of built‐in types (porous media resistance, explicit/implicit sources, momentum sources, scalar sources, etc.) and even your own custom fvOption plugins.
+
+In short, fvOptions(T) makes your temperature equation automatically include whatever “extra physics” you’ve defined in the fvOptions dictionary,
+ keeping your solver code clean and highly configurable.

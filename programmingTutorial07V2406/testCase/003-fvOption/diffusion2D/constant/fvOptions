@@ -1,0 +1,60 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+//在 OpenFOAM 中，fvOptions 并不是一个“代码”文件，而是一种通用的字典（dictionary）机制，
+//用来在不改动求解器源码的情况下，向控制方程里加各种“额外项”（source terms、body forces、阻力项、质量/动量/能量源等）。它主要有以下用途：
+heatSource
+{
+    type            scalarSemiImplicitSource;
+    active          yes;
+
+    scalarSemiImplicitSourceCoeffs
+    {
+        timeStart       0.2;
+        duration        2.0;
+		selectionMode   cellZone;
+		cellZone        boxSourceZone;
+
+        volumeMode      absolute;
+        injectionRateSuSp
+        {
+            T (0.05 0);
+        }
+    }
+}
+/*
+heatSource
+{
+    type scalarSemiImplicitSource;
+    active          true;
+    selectionMode   cellZone;
+    cellZone        boxSourceZone;
+
+    scalarSemiImplicitSourceCoeffs 
+    {
+        timeStart       0.2;
+        duration        2.0;
+        
+        volumeMode absolute;
+        injectionRateSuSp 
+        {
+            T (0.05 0);
+        }
+    }
+}
+*/
+
+// ************************************************************************* //
