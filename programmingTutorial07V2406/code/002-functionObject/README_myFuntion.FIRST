@@ -1,0 +1,108 @@
+Tut7: Implementing new  thermophysical model function objects, fvOptions
+
+
+fectch the themoPhycialPropetyies libray out of the scr folder, compile them.
+
+Tut7.2 :new   function objects
+
+1. initial prepare for project structure:
+    Copy forces folder 
+        /home/huanix/OpenFOAM/OpenFOAM-v2406/src/functionObjects/forces 
+    to personal poject root:
+        /home/huanix/OpenFOAM/huanix-v2406/run/programmingTutorial07V2406/code/002-functionObject/myFunctionObject
+    and rename forces as myFunctionObject
+    then  rename all the string "forces" as "myFunctionObject" no matter for  folder name or contents in Make/files,Make/options
+
+            ct/myFunctionObject$ tree
+        .
+        ├── Make
+        │   ├── files
+        │   ├── linux64GccDPInt32Opt
+        │   │   ├── myFunctionObject
+        │   │   │   ├── myFunctionObject.C.dep
+        │   │   │   └── myFunctionObject.o
+        │   │   ├── options
+        │   │   ├── sourceFiles
+        │   │   └── variables
+        │   └── options
+        ├── doc
+        │   └── forcesFunctionObjectsDoc.H
+        ├── forceCoeffs
+        │   ├── forceCoeffs.C
+        │   └── forceCoeffs.H
+        ├── lnInclude
+        │   ├── forceCoeffs.C -> ../forceCoeffs/forceCoeffs.C
+        │   ├── forceCoeffs.H -> ../forceCoeffs/forceCoeffs.H
+        │   ├── forcesFunctionObjectsDoc.H -> ../doc/forcesFunctionObjectsDoc.H
+        │   ├── myFunctionObject.C -> ../myFunctionObject/myFunctionObject.C
+        │   ├── myFunctionObject.H -> ../myFunctionObject/myFunctionObject.H
+        │   ├── propellerInfo.C -> ../propellerInfo/propellerInfo.C
+        │   └── propellerInfo.H -> ../propellerInfo/propellerInfo.H
+        ├── myFunctionObject
+        │   ├── myFunctionObject.C
+        │   └── myFunctionObject.H
+        └── propellerInfo
+            ├── propellerInfo.C
+            └── propellerInfo.H
+2. compile the code.
+3. testcase in cavityMyFucntion:
+    you can find template of how to set proper forces functions used in controlDict via searching(in tut/incompressible folder) 
+    grep -r forces
+
+
+    here is a eample:   
+
+        functions
+        {
+            forces
+                {
+                    // type          forces;
+                    type          myFunctionObject;
+
+                    
+                    libs          (libmyFunctionObject.so);
+
+                    writeControl  timeStep;
+                    timeInterval  1;
+
+                    patches       (movingWall);
+                    rho           rhoInf;     // Indicates incompressible
+                    log           true;
+                    rhoInf        1;          // Redundant for incompressible
+
+                    CofR          (0 0 0);    // Rotation around centre line of propeller
+                    pitchAxis     (0 1 0);
+                }
+
+        }
+4. run the test case; finito
+
+
+正确流程是：
+
+先把改动暂存（stage）
+如果你想把所有改动都提交，运行：
+
+bash
+Copy
+Edit
+git add .
+或者只暂存某个目录／文件：
+
+bash
+Copy
+Edit
+git add programmingTutorial07V2406
+再提交（commit）
+
+bash
+Copy
+Edit
+git commit -m "this is the exercise for build user custom function and thermal model"
+最后推送到远程
+
+bash
+Copy
+Edit
+git push
+这样才能把本地的修改真正写进 Git 历史，并同步到 GitHub。
